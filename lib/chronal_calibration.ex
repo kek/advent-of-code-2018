@@ -10,30 +10,16 @@ defmodule ChronalCalibration do
       Stream.cycle(changes)
       |> Stream.scan({0, MapSet.new()}, fn change, {frequency, seen} ->
         frequency = frequency + change
-
-        if MapSet.member?(seen, frequency) do
-          # IO.puts("found #{frequency} in #{inspect(seen)}")
-          send(me, frequency)
-          seen
-        end
-
-        # IO.inspect(
-        #   "The change is #{change}. New frequency is #{frequency}. Seen #{inspect(seen)}"
-        # )
-
-        seen = MapSet.put(seen, frequency)
-
-        {frequency, seen}
+        if MapSet.member?(seen, frequency), do: send(me, frequency)
+        {frequency, MapSet.put(seen, frequency)}
       end)
       |> Stream.run()
     end)
 
     receive do
-      x ->
-        x
+      result -> result
     after
-      1000 ->
-        :timeout
+      1000 -> :timeout
     end
   end
 end
