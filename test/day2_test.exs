@@ -48,4 +48,8 @@
 
 defmodule AdventOfCode2018.Day2Test do
   use ExUnit.Case
+
+  test "solution 1" do
+    assert AdventOfCode2018.Day2.solution1() == 8118
+  end
 end
