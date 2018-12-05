@@ -69,4 +69,64 @@ defmodule InventoryManagement do
     do: 1 + levenshtein_distance(left_tail, right_tail)
 
   def levenshtein_distance([], []), do: 0
+
+  @doc ~S"""
+  Determines common letters between two strings.
+
+  ## Examples
+
+      iex> InventoryManagement.common_letters("a", "a")
+      "a"
+
+      iex> InventoryManagement.common_letters("a", "b")
+      ""
+
+      iex> InventoryManagement.common_letters("ab", "bb")
+      "b"
+  """
+  def common_letters(a, b) when is_binary(a) and is_binary(b),
+    do:
+      InventoryManagement.common_letters(String.codepoints(a), String.codepoints(b))
+      |> Enum.join()
+
+  def common_letters([same | left_tail], [same | right_tail]),
+    do: [same] ++ common_letters(left_tail, right_tail)
+
+  def common_letters([_ | left_tail], [_ | right_tail]), do: common_letters(left_tail, right_tail)
+  def common_letters([], []), do: []
+
+  @doc ~S"""
+  Determines which strings in a list of strings differ by just 1 character.
+
+  ## Examples
+
+      iex> InventoryManagement.which_ones_differ_by_1(["abcde", "fghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz"])
+      {"fghij", "fguij"}
+  """
+  def which_ones_differ_by_1(strings) do
+    strings
+    |> pairs
+    |> Enum.find(fn {a, b} -> levenshtein_distance(a, b) == 1 end)
+  end
+
+  defp pairs(list) do
+    for a <- list, b <- list, do: {a, b}
+  end
+
+  @doc ~S"""
+  Determines common characters of two strings in a list of strings where these
+  two strings differ by just 1 character.
+
+  ## Examples
+
+      iex> InventoryManagement.common_characters_between_strings_differing_by_1(["abcde", "fghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz"])
+      "fgij"
+  """
+  def common_characters_between_strings_differing_by_1(strings) do
+    {a, b} =
+      strings
+      |> which_ones_differ_by_1
+
+    common_letters(a, b)
+  end
 end

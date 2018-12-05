@@ -61,6 +61,7 @@
 # fguij
 # axcye
 # wvxyz
+#
 # The IDs abcde and axcye are close, but they differ by two characters (the
 # second and fourth). However, the IDs fghij and fguij differ by exactly one
 # character, the third (h and u). Those must be the correct boxes.
@@ -74,5 +75,9 @@ defmodule AdventOfCode2018.Day2Test do
 
   test "solution 1" do
     assert AdventOfCode2018.Day2.solution1() == 8118
+  end
+
+  test "solution 2" do
+    assert AdventOfCode2018.Day2.solution2() == "jbbenqtlaxhivmwyscjukztdp"
   end
 end
