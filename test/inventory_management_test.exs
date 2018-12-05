@@ -3,6 +3,8 @@ defmodule InventoryManagementTest do
 
   import InventoryManagement
 
+  doctest InventoryManagement
+
   test "checksum" do
     boxes = ["abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab"]
 

@@ -40,4 +40,33 @@ defmodule InventoryManagement do
     |> Map.values()
     |> Enum.any?(&(&1 == number))
   end
+
+  @doc ~S"""
+  Calculates the Levenshtein distance between two strings.
+
+  ## Examples
+
+      iex> InventoryManagement.levenshtein_distance("a", "a")
+      0
+
+      iex> InventoryManagement.levenshtein_distance("a", "b")
+      1
+
+      iex> InventoryManagement.levenshtein_distance("abcde", "axcye")
+      2
+
+      iex> InventoryManagement.levenshtein_distance("fghij", "fguij")
+      1
+  """
+  def levenshtein_distance(a, b) when is_binary(a) and is_binary(b) do
+    levenshtein_distance(String.codepoints(a), String.codepoints(b))
+  end
+
+  def levenshtein_distance([same | left_tail], [same | right_tail]),
+    do: 0 + levenshtein_distance(left_tail, right_tail)
+
+  def levenshtein_distance([_ | left_tail], [_ | right_tail]),
+    do: 1 + levenshtein_distance(left_tail, right_tail)
+
+  def levenshtein_distance([], []), do: 0
 end
