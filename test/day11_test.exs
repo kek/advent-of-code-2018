@@ -78,4 +78,9 @@ defmodule AdventOfCode2018.Day11Test do
   test "solution 1" do
     assert AdventOfCode2018.Day11.solution1() == {{235, 22}, 30}
   end
+
+  @tag :pending
+  test "solution 2" do
+    assert AdventOfCode2018.Day11.solution2() == "🤷"
+  end
 end

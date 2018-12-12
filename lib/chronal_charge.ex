@@ -44,14 +44,14 @@ defmodule ChronalCharge do
 
   Examples
 
-      iex> ChronalCharge.total_power({33,45}, 18)
+      iex> ChronalCharge.total_power({33,45}, 18, 3)
       29
-      iex> ChronalCharge.total_power({21,61}, 42)
+      iex> ChronalCharge.total_power({21,61}, 42, 3)
       30
 
   """
-  def total_power({x, y}, grid_serial_number) do
-    for x1 <- x..(x + 2), y1 <- y..(y + 2) do
+  def total_power({x, y}, grid_serial_number, square_size) do
+    for x1 <- x..(x + square_size - 1), y1 <- y..(y + square_size - 1) do
       power_level({x1, y1}, grid_serial_number)
     end
     |> Enum.sum()
@@ -63,16 +63,35 @@ defmodule ChronalCharge do
 
   ## Examples
 
-      iex> ChronalCharge.largest_total_power(18)
+      iex> ChronalCharge.largest_total_power(18, 3)
       {{33,45}, 29}
-      iex> ChronalCharge.largest_total_power(42)
+      iex> ChronalCharge.largest_total_power(42, 3)
       {{21,61}, 30}
   """
-  def largest_total_power(grid_serial_number) do
-    for x <- 1..298, y <- 1..298 do
-      {{x, y}, total_power({x, y}, grid_serial_number)}
+  def largest_total_power(grid_serial_number, square_size) do
+    for x <- 1..(300 - square_size + 1), y <- 1..(300 - square_size + 1) do
+      {{x, y}, total_power({x, y}, grid_serial_number, square_size)}
     end
     |> Enum.sort(fn {_, a}, {_, b} -> a > b end)
+    |> hd()
+  end
+
+  @doc """
+  Finds the largest total power for a square of any size.
+
+  ## Examples
+
+      iex> ChronalCharge.largest_total_power_for_any_size(18)
+      {{90,269}, 16}
+      iex> ChronalCharge.largest_total_power_for_any_size(42)
+      {{232,251}, 12}
+  """
+  def largest_total_power_for_any_size(grid_serial_number) do
+    1..300
+    |> Enum.each(fn size ->
+      {largest_total_power(grid_serial_number, size), size}
+    end)
+    |> Enum.sort(fn {{{x, y}, power1}, size}, {{{x, y}, power2}, size} -> power1 > power2 end)
     |> hd()
   end
 end
