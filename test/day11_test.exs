@@ -1,6 +1,7 @@
 # --- Day 11: Chronal Charge ---
 
-# You watch the Elves and their sleigh fade into the distance as they head toward the North Pole.
+# You watch the Elves and their sleigh fade into the distance as they head
+# toward the North Pole.
 
 # Actually, you're the one fading. The falling sensation returns.
 
