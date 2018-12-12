@@ -1,6 +1,6 @@
 defmodule AdventOfCode2018.Day11 do
   def solution1 do
-    read_input() + 1
+    ChronalCharge.largest_total_power(read_input())
   end
 
   defp read_input do

@@ -76,6 +76,6 @@ defmodule AdventOfCode2018.Day11Test do
   use ExUnit.Case
 
   test "solution 1" do
-    assert AdventOfCode2018.Day11.solution1() == :"🤷🏻‍"
+    assert AdventOfCode2018.Day11.solution1() == {{235, 22}, 30}
   end
 end
