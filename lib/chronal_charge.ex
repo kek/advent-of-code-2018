@@ -1,4 +1,6 @@
 defmodule ChronalCharge do
+  require Logger
+
   @doc """
   Finds the rack ID of a cell.
 
@@ -24,37 +26,51 @@ defmodule ChronalCharge do
       4
   """
   def power_level({x, y}, grid_serial_number) do
-    rack_id = x + 10
-    power_level = rack_id * y
-    power_level = power_level + grid_serial_number
-    power_level = power_level * rack_id
-    digits = power_level |> Integer.to_string() |> String.codepoints()
+    {:power_level, x, y, grid_serial_number}
+    |> memoize(fn ->
+      rack_id = x + 10
+      power_level = rack_id * y
+      power_level = power_level + grid_serial_number
+      power_level = power_level * rack_id
+      digits = power_level |> Integer.to_string() |> String.codepoints()
 
-    hundreds =
-      case Enum.slice(digits, -3..-3) do
-        [] -> 0
-        [x] -> String.to_integer(x)
-      end
+      hundreds =
+        case Enum.slice(digits, -3..-3) do
+          [] -> 0
+          [x] -> String.to_integer(x)
+        end
 
-    hundreds - 5
+      hundreds - 5
+    end)
   end
 
   @doc """
   Determines the total power of a 3*3 square.
 
-  Examples
+  ## Examples
 
       iex> ChronalCharge.total_power({33,45}, 18, 3)
       29
       iex> ChronalCharge.total_power({21,61}, 42, 3)
       30
-
   """
   def total_power({x, y}, grid_serial_number, square_size) do
-    for x1 <- x..(x + square_size - 1), y1 <- y..(y + square_size - 1) do
-      power_level({x1, y1}, grid_serial_number)
+    # {:total_power, x, y, grid_serial_number, square_size}
+    # |> memoize(fn ->
+    # xrange = x..(x + square_size - 1)
+    # yrange = y..(y + square_size - 1)
+    xrange = memoize({:range, x, square_size}, fn -> x..(x + square_size - 1) end)
+    yrange = memoize({:range, y, square_size}, fn -> y..(y + square_size - 1) end)
+
+    for x1 <- xrange, y1 <- yrange do
+      {:power_level, x1, y1, grid_serial_number}
+      |> memoize(fn ->
+        power_level({x1, y1}, grid_serial_number)
+      end)
     end
     |> Enum.sum()
+
+    # end)
   end
 
   @doc """
@@ -69,29 +85,65 @@ defmodule ChronalCharge do
       {{21,61}, 30}
   """
   def largest_total_power(grid_serial_number, square_size) do
-    for x <- 1..(300 - square_size + 1), y <- 1..(300 - square_size + 1) do
-      {{x, y}, total_power({x, y}, grid_serial_number, square_size)}
-    end
-    |> Enum.sort(fn {_, a}, {_, b} -> a > b end)
-    |> hd()
+    xrange = memoize({:range, square_size}, fn -> 1..(300 - square_size + 1) end)
+    yrange = memoize({:range, square_size}, fn -> 1..(300 - square_size + 1) end)
+
+    {:largest_total_power, grid_serial_number, square_size}
+    |> memoize(fn ->
+      for x <- xrange, y <- yrange do
+        {{x, y}, total_power({x, y}, grid_serial_number, square_size)}
+      end
+      |> Enum.max_by(fn {_, a} -> a end)
+    end)
   end
 
-  @doc """
-  Finds the largest total power for a square of any size.
+  # @doc """
+  # Finds the largest total power for a square of any size.
 
-  ## Examples
+  # ## Examples
 
-      iex> ChronalCharge.largest_total_power_for_any_size(18)
-      {{90,269}, 16}
-      iex> ChronalCharge.largest_total_power_for_any_size(42)
-      {{232,251}, 12}
-  """
+  #     iex> ChronalCharge.largest_total_power_for_any_size(18)
+  #     {{90,269}, 16}
+  #     iex> ChronalCharge.largest_total_power_for_any_size(42)
+  #     {{232,251}, 12}
+  # """
   def largest_total_power_for_any_size(grid_serial_number) do
     1..300
     |> Enum.each(fn size ->
-      {largest_total_power(grid_serial_number, size), size}
+      Logger.info("calculating largest_total_power for #{size}")
+      {time, result} = :timer.tc(fn -> {largest_total_power(grid_serial_number, size), size} end)
+      Logger.info("time: #{time}, result: #{inspect(result)}")
+      result
     end)
-    |> Enum.sort(fn {{{x, y}, power1}, size}, {{{x, y}, power2}, size} -> power1 > power2 end)
-    |> hd()
+    |> Enum.max_by(fn a = {{{_x, _y}, power}, _size} ->
+      Logger.info("calculating max for #{inspect(a)}")
+      power
+    end)
   end
+
+  defp memoize(key, fun) do
+    case Process.get(key) do
+      nil ->
+        value = fun.()
+        Logger.info("Putting #{inspect(key)} => #{inspect(value)}")
+        Process.put(key, value)
+        value
+
+      x ->
+        x
+    end
+  end
+
+  # defp memoize(key, fun) do
+  #   case :ets.lookup(:elixir_config, key) do
+  #     [{^key, value}] ->
+  #       value
+
+  #     [] ->
+  #       value = fun.()
+  #       Logger.info("Putting #{inspect(key)} => #{inspect(value)}")
+  #       true = :ets.insert(:elixir_config, {key, value})
+  #       value
+  #   end
+  # end
 end
