@@ -116,29 +116,29 @@ defmodule ChronalCharge do
     end)
   end
 
-  defp memoize(key, fun) do
-    case Process.get(key) do
-      nil ->
-        value = fun.()
-        Logger.info("Putting #{inspect(key)} => #{inspect(value)}")
-        Process.put(key, value)
-        value
-
-      x ->
-        x
-    end
-  end
-
   # defp memoize(key, fun) do
-  #   case :ets.lookup(:elixir_config, key) do
-  #     [{^key, value}] ->
-  #       value
-
-  #     [] ->
+  #   case Process.get(key) do
+  #     nil ->
   #       value = fun.()
   #       Logger.info("Putting #{inspect(key)} => #{inspect(value)}")
-  #       true = :ets.insert(:elixir_config, {key, value})
+  #       Process.put(key, value)
   #       value
+
+  #     x ->
+  #       x
   #   end
   # end
+
+  defp memoize(key, fun) do
+    case :ets.lookup(:chronal_charges, key) do
+      [{^key, value}] ->
+        value
+
+      [] ->
+        value = fun.()
+        Logger.info("Putting #{inspect(key)} => #{inspect(value)}")
+        true = :ets.insert(:elixir_config, {key, value})
+        value
+    end
+  end
 end
