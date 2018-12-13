@@ -53,14 +53,11 @@ defmodule ChronalCharge do
       yrange = memoize({:range, y, square_size}, fn -> y..(y + square_size - 1) end)
 
       for x1 <- xrange, y1 <- yrange do
-        Task.async(fn ->
-          {:power_level, x1, y1, grid_serial_number}
-          |> memoize(fn ->
-            power_level({x1, y1}, grid_serial_number)
-          end)
+        {:power_level, x1, y1, grid_serial_number}
+        |> memoize(fn ->
+          power_level({x1, y1}, grid_serial_number)
         end)
       end
-      |> Enum.map(&Task.await/1)
       |> Enum.sum()
     end)
   end
@@ -83,11 +80,8 @@ defmodule ChronalCharge do
       yrange = memoize({:range, square_size}, fn -> 1..(300 - square_size + 1) end)
 
       for x <- xrange, y <- yrange do
-        Task.async(fn ->
-          {{x, y}, total_power({x, y}, grid_serial_number, square_size)}
-        end)
+        {{x, y}, total_power({x, y}, grid_serial_number, square_size)}
       end
-      |> Enum.map(&Task.await/1)
       |> Enum.max_by(fn {_, a} -> a end)
     end)
   end
