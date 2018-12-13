@@ -2,16 +2,6 @@ defmodule ChronalCharge do
   require Logger
 
   @doc """
-  Finds the rack ID of a cell.
-
-  ## Examples
-
-      iex> ChronalCharge.rack_id({3,5})
-      13
-  """
-  def rack_id({x, _}), do: x + 10
-
-  @doc """
   Determines the power level of a cell.
 
   ## Examples
@@ -45,7 +35,7 @@ defmodule ChronalCharge do
   end
 
   @doc """
-  Determines the total power of a 3*3 square.
+  Determines the total power of a z*z square.
 
   ## Examples
 
@@ -55,26 +45,25 @@ defmodule ChronalCharge do
       30
   """
   def total_power({x, y}, grid_serial_number, square_size) do
-    # {:total_power, x, y, grid_serial_number, square_size}
-    # |> memoize(fn ->
-    # xrange = x..(x + square_size - 1)
-    # yrange = y..(y + square_size - 1)
-    xrange = memoize({:range, x, square_size}, fn -> x..(x + square_size - 1) end)
-    yrange = memoize({:range, y, square_size}, fn -> y..(y + square_size - 1) end)
+    {:total_power, x, y, grid_serial_number, square_size}
+    |> memoize(fn ->
+      # xrange = x..(x + square_size - 1)
+      # yrange = y..(y + square_size - 1)
+      xrange = memoize({:range, x, square_size}, fn -> x..(x + square_size - 1) end)
+      yrange = memoize({:range, y, square_size}, fn -> y..(y + square_size - 1) end)
 
-    for x1 <- xrange, y1 <- yrange do
-      {:power_level, x1, y1, grid_serial_number}
-      |> memoize(fn ->
-        power_level({x1, y1}, grid_serial_number)
-      end)
-    end
-    |> Enum.sum()
-
-    # end)
+      for x1 <- xrange, y1 <- yrange do
+        {:power_level, x1, y1, grid_serial_number}
+        |> memoize(fn ->
+          power_level({x1, y1}, grid_serial_number)
+        end)
+      end
+      |> Enum.sum()
+    end)
   end
 
   @doc """
-  Determines the x,y coordinate of the top-left fuel cell in the 3*3 square
+  Determines the x,y coordinate of the top-left fuel cell in the z*z square
   with the largest total power.
 
   ## Examples
@@ -85,11 +74,11 @@ defmodule ChronalCharge do
       {{21,61}, 30}
   """
   def largest_total_power(grid_serial_number, square_size) do
-    xrange = memoize({:range, square_size}, fn -> 1..(300 - square_size + 1) end)
-    yrange = memoize({:range, square_size}, fn -> 1..(300 - square_size + 1) end)
-
     {:largest_total_power, grid_serial_number, square_size}
     |> memoize(fn ->
+      xrange = memoize({:range, square_size}, fn -> 1..(300 - square_size + 1) end)
+      yrange = memoize({:range, square_size}, fn -> 1..(300 - square_size + 1) end)
+
       for x <- xrange, y <- yrange do
         {{x, y}, total_power({x, y}, grid_serial_number, square_size)}
       end
