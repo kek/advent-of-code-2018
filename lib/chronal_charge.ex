@@ -53,11 +53,14 @@ defmodule ChronalCharge do
       yrange = memoize({:range, y, square_size}, fn -> y..(y + square_size - 1) end)
 
       for x1 <- xrange, y1 <- yrange do
-        {:power_level, x1, y1, grid_serial_number}
-        |> memoize(fn ->
-          power_level({x1, y1}, grid_serial_number)
+        Task.async(fn ->
+          {:power_level, x1, y1, grid_serial_number}
+          |> memoize(fn ->
+            power_level({x1, y1}, grid_serial_number)
+          end)
         end)
       end
+      |> Enum.map(&Task.await/1)
       |> Enum.sum()
     end)
   end
@@ -80,8 +83,11 @@ defmodule ChronalCharge do
       yrange = memoize({:range, square_size}, fn -> 1..(300 - square_size + 1) end)
 
       for x <- xrange, y <- yrange do
-        {{x, y}, total_power({x, y}, grid_serial_number, square_size)}
+        Task.async(fn ->
+          {{x, y}, total_power({x, y}, grid_serial_number, square_size)}
+        end)
       end
+      |> Enum.map(&Task.await/1)
       |> Enum.max_by(fn {_, a} -> a end)
     end)
   end
@@ -98,12 +104,18 @@ defmodule ChronalCharge do
   # """
   def largest_total_power_for_any_size(grid_serial_number) do
     1..300
-    |> Enum.each(fn size ->
-      Logger.info("calculating largest_total_power for #{size}")
-      {time, result} = :timer.tc(fn -> {largest_total_power(grid_serial_number, size), size} end)
-      Logger.info("time: #{time}, result: #{inspect(result)}")
-      result
+    |> Enum.map(fn size ->
+      Task.async(fn ->
+        Logger.info("calculating largest_total_power for #{size}")
+
+        {time, result} =
+          :timer.tc(fn -> {largest_total_power(grid_serial_number, size), size} end)
+
+        Logger.info("time: #{time}, result: #{inspect(result)}")
+        result
+      end)
     end)
+    |> Enum.map(&Task.await/1)
     |> Enum.max_by(fn a = {{{_x, _y}, power}, _size} ->
       Logger.info("calculating max for #{inspect(a)}")
       power
