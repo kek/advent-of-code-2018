@@ -22,17 +22,21 @@ defmodule ChronalCharge do
       power_level = rack_id * y
       power_level = power_level + grid_serial_number
       power_level = power_level * rack_id
-      digits = power_level |> Integer.to_string() |> String.codepoints()
 
       hundreds =
-        case Enum.slice(digits, -3..-3) do
+        digits(power_level)
+        |> Enum.slice(-3..-3)
+        |> case do
           [] -> 0
-          [x] -> String.to_integer(x)
+          [x] -> x
         end
 
       hundreds - 5
     end)
   end
+
+  def digits(n) when n < 10, do: [n]
+  def digits(n), do: digits(div(n, 10)) ++ [rem(n, 10)]
 
   @doc """
   Determines the total power of a z*z square.
@@ -96,20 +100,19 @@ defmodule ChronalCharge do
   #     iex> ChronalCharge.largest_total_power_for_any_size(42)
   #     {{232,251}, 12}
   # """
-  def largest_total_power_for_any_size(grid_serial_number) do
-    1..300
+  def largest_total_power_for_any_size(grid_serial_number, max_size \\ 300) do
+    1..max_size
     |> Enum.map(fn size ->
-      Task.async(fn ->
-        Logger.info("calculating largest_total_power for #{size}")
+      # Task.async(fn ->
+      Logger.info("calculating largest_total_power for #{size}")
 
-        {time, result} =
-          :timer.tc(fn -> {largest_total_power(grid_serial_number, size), size} end)
+      {time, result} = :timer.tc(fn -> {largest_total_power(grid_serial_number, size), size} end)
 
-        Logger.info("time: #{time}, result: #{inspect(result)}")
-        result
-      end)
+      Logger.info("time: #{time}, result: #{inspect(result)}")
+      result
+      # end)
     end)
-    |> Enum.map(&Task.await/1)
+    # |> Enum.map(&Task.await(&1, 10_000_000))
     |> Enum.max_by(fn a = {{{_x, _y}, power}, _size} ->
       Logger.info("calculating max for #{inspect(a)}")
       power
@@ -130,13 +133,13 @@ defmodule ChronalCharge do
   # end
 
   defp memoize(key, fun) do
-    case :ets.lookup(:chronal_charges, key) do
+    case :ets.lookup(:elixir_config, key) do
       [{^key, value}] ->
         value
 
       [] ->
         value = fun.()
-        Logger.info("Putting #{inspect(key)} => #{inspect(value)}")
+        # Logger.info("Putting #{inspect(key)} => #{inspect(value)}")
         true = :ets.insert(:elixir_config, {key, value})
         value
     end
