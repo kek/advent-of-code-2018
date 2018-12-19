@@ -24,20 +24,13 @@ defmodule ChronalCharge do
       power_level = power_level + grid_serial_number
       power_level = power_level * rack_id
 
-      hundreds =
-        digits(power_level)
-        |> Enum.slice(-3..-3)
-        |> case do
-          [] -> 0
-          [x] -> x
-        end
+      hundreds = digits(power_level)
 
       hundreds - 5
     end)
   end
 
-  def digits(n) when n < 10, do: [n]
-  def digits(n), do: digits(div(n, 10)) ++ [rem(n, 10)]
+  def digits(n), do: n |> div(100) |> rem(10)
 
   @doc """
   Determines the total power of a z*z square.
