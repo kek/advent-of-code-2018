@@ -1,4 +1,4 @@
-defmodule Instructions do
+defmodule Instruction do
   use Bitwise
 
   # Addition:
@@ -9,10 +9,10 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.addr([1, 1, -1, -1], 0, 1, 3)
+      iex> Instruction.perform(:addr, [1, 1, -1, -1], 0, 1, 3)
       [1, 1, -1, 2]
   """
-  def addr(registers, a, b, c) do
+  def perform(:addr, registers, a, b, c) do
     List.replace_at(registers, c, Enum.at(registers, a) + Enum.at(registers, b))
   end
 
@@ -22,10 +22,10 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.addi([1, -1, -1, -1], 0, 1, 3)
+      iex> Instruction.perform(:addi, [1, -1, -1, -1], 0, 1, 3)
       [1, -1, -1, 2]
   """
-  def addi(registers, a, b, c) do
+  def perform(:addi, registers, a, b, c) do
     List.replace_at(registers, c, Enum.at(registers, a) + b)
   end
 
@@ -37,10 +37,10 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.mulr([3, 3, -1, -1], 0, 1, 3)
+      iex> Instruction.perform(:mulr, [3, 3, -1, -1], 0, 1, 3)
       [3, 3, -1, 9]
   """
-  def mulr(registers, a, b, c) do
+  def perform(:mulr, registers, a, b, c) do
     List.replace_at(registers, c, Enum.at(registers, a) * Enum.at(registers, b))
   end
 
@@ -50,10 +50,10 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.muli([3, 3, -1, -1], 0, 1, 3)
+      iex> Instruction.perform(:muli, [3, 3, -1, -1], 0, 1, 3)
       [3, 3, -1, 3]
   """
-  def muli(registers, a, b, c) do
+  def perform(:muli, registers, a, b, c) do
     List.replace_at(registers, c, Enum.at(registers, a) * b)
   end
 
@@ -64,10 +64,10 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.banr([1, 127, -1, -1], 0, 1, 3)
+      iex> Instruction.perform(:banr, [1, 127, -1, -1], 0, 1, 3)
       [1, 127, -1, 1]
   """
-  def banr(registers, a, b, c) do
+  def perform(:banr, registers, a, b, c) do
     List.replace_at(registers, c, band(Enum.at(registers, a), Enum.at(registers, b)))
   end
 
@@ -77,10 +77,10 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.bani([1, 0, -1, -1], 0, 1, 3)
+      iex> Instruction.perform(:bani, [1, 0, -1, -1], 0, 1, 3)
       [1, 0, -1, 1]
   """
-  def bani(registers, a, b, c) do
+  def perform(:bani, registers, a, b, c) do
     List.replace_at(registers, c, band(Enum.at(registers, a), b))
   end
 
@@ -92,14 +92,14 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.borr([0, 0, 0, 0], 0, 1, 3)
+      iex> Instruction.perform(:borr, [0, 0, 0, 0], 0, 1, 3)
       [0, 0, 0, 0]
-      iex> Instructions.borr([0, 1, 0, 0], 0, 1, 3)
+      iex> Instruction.perform(:borr, [0, 1, 0, 0], 0, 1, 3)
       [0, 1, 0, 1]
-      iex> Instructions.borr([1, 1, 0, 0], 0, 1, 3)
+      iex> Instruction.perform(:borr, [1, 1, 0, 0], 0, 1, 3)
       [1, 1, 0, 1]
   """
-  def borr(registers, a, b, c) do
+  def perform(:borr, registers, a, b, c) do
     List.replace_at(registers, c, bor(Enum.at(registers, a), Enum.at(registers, b)))
   end
 
@@ -109,10 +109,10 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.bori([0, 0, 0, 0], 0, 1, 3)
+      iex> Instruction.perform(:bori, [0, 0, 0, 0], 0, 1, 3)
       [0, 0, 0, 1]
   """
-  def bori(registers, a, b, c) do
+  def perform(:bori, registers, a, b, c) do
     List.replace_at(registers, c, bor(Enum.at(registers, a), b))
   end
 
@@ -124,10 +124,10 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.setr([1, -1, -1, 0], 0, -1, 3)
+      iex> Instruction.perform(:setr, [1, -1, -1, 0], 0, -1, 3)
       [1, -1, -1, 1]
   """
-  def setr(registers, a, _b, c) do
+  def perform(:setr, registers, a, _b, c) do
     List.replace_at(registers, c, Enum.at(registers, a))
   end
 
@@ -137,10 +137,10 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.seti([1, -1, -1, 0], 2, -1, 3)
+      iex> Instruction.perform(:seti, [1, -1, -1, 0], 2, -1, 3)
       [1, -1, -1, 2]
   """
-  def seti(registers, a, _b, c) do
+  def perform(:seti, registers, a, _b, c) do
     List.replace_at(registers, c, a)
   end
 
@@ -152,14 +152,14 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.gtir([0, 0, -1, -1], 0, 1, 3)
+      iex> Instruction.perform(:gtir, [0, 0, -1, -1], 0, 1, 3)
       [0, 0, -1, 0]
-      iex> Instructions.gtir([0, 0, -1, -1], 1, 0, 3)
+      iex> Instruction.perform(:gtir, [0, 0, -1, -1], 1, 0, 3)
       [0, 0, -1, 1]
-      iex> Instructions.gtir([0, 0, -1, -1], 0, 1, 3)
+      iex> Instruction.perform(:gtir, [0, 0, -1, -1], 0, 1, 3)
       [0, 0, -1, 0]
   """
-  def gtir(registers, a, b, c) do
+  def perform(:gtir, registers, a, b, c) do
     if a > Enum.at(registers, b) do
       List.replace_at(registers, c, 1)
     else
@@ -173,12 +173,12 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.gtri([0, 0, 0, -1], 0, 0, 3)
+      iex> Instruction.perform(:gtri, [0, 0, 0, -1], 0, 0, 3)
       [0, 0, 0, 0]
-      iex> Instructions.gtri([0, 0, 0, -1], 0, -1, 3)
+      iex> Instruction.perform(:gtri, [0, 0, 0, -1], 0, -1, 3)
       [0, 0, 0, 1]
   """
-  def gtri(registers, a, b, c) do
+  def perform(:gtri, registers, a, b, c) do
     if Enum.at(registers, a) > b do
       List.replace_at(registers, c, 1)
     else
@@ -192,14 +192,14 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.gtrr([5, 6, 0, -1], 0, 1, 3)
+      iex> Instruction.perform(:gtrr, [5, 6, 0, -1], 0, 1, 3)
       [5, 6, 0, 0]
-      iex> Instructions.gtrr([5, 6, 0, -1], 1, 0, 3)
+      iex> Instruction.perform(:gtrr, [5, 6, 0, -1], 1, 0, 3)
       [5, 6, 0, 1]
-      iex> Instructions.gtrr([5, 5, 0, -1], 0, 1, 3)
+      iex> Instruction.perform(:gtrr, [5, 5, 0, -1], 0, 1, 3)
       [5, 5, 0, 0]
   """
-  def gtrr(registers, a, b, c) do
+  def perform(:gtrr, registers, a, b, c) do
     if Enum.at(registers, a) > Enum.at(registers, b) do
       List.replace_at(registers, c, 1)
     else
@@ -215,12 +215,12 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.eqir([0, 0, 0, -1], 0, 0, 3)
+      iex> Instruction.perform(:eqir, [0, 0, 0, -1], 0, 0, 3)
       [0, 0, 0, 1]
-      iex> Instructions.eqir([0, 0, 0, -1], 1, 0, 3)
+      iex> Instruction.perform(:eqir, [0, 0, 0, -1], 1, 0, 3)
       [0, 0, 0, 0]
   """
-  def eqir(registers, a, b, c) do
+  def perform(:eqir, registers, a, b, c) do
     if a == Enum.at(registers, b) do
       List.replace_at(registers, c, 1)
     else
@@ -234,12 +234,12 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.eqri([5, 0, 0, -1], 0, 5, 3)
+      iex> Instruction.perform(:eqri, [5, 0, 0, -1], 0, 5, 3)
       [5, 0, 0, 1]
-      iex> Instructions.eqri([6, 0, 0, -1], 0, 5, 3)
+      iex> Instruction.perform(:eqri, [6, 0, 0, -1], 0, 5, 3)
       [6, 0, 0, 0]
   """
-  def eqri(registers, a, b, c) do
+  def perform(:eqri, registers, a, b, c) do
     if Enum.at(registers, a) == b do
       List.replace_at(registers, c, 1)
     else
@@ -253,13 +253,13 @@ defmodule Instructions do
 
   ## Examples
 
-      iex> Instructions.eqrr([5, 6, 0, -1], 0, 1, 3)
+      iex> Instruction.perform(:eqrr, [5, 6, 0, -1], 0, 1, 3)
       [5, 6, 0, 0]
-      iex> Instructions.eqrr([5, 5, 0, -1], 0, 1, 3)
+      iex> Instruction.perform(:eqrr, [5, 5, 0, -1], 0, 1, 3)
       [5, 5, 0, 1]
 
   """
-  def eqrr(registers, a, b, c) do
+  def perform(:eqrr, registers, a, b, c) do
     if Enum.at(registers, a) == Enum.at(registers, b) do
       List.replace_at(registers, c, 1)
     else
