@@ -1,4 +1,5 @@
 defmodule ChronalCharge do
+  # https://en.wikipedia.org/wiki/Summed-area_table
   require Logger
 
   @doc """
