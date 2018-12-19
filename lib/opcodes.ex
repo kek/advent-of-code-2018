@@ -9,8 +9,8 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.addr([1,1,-1,-1], 0, 1, 3)
-      [1,1,-1,2]
+      iex> Opcodes.addr([1, 1, -1, -1], 0, 1, 3)
+      [1, 1, -1, 2]
   """
   def addr(registers, a, b, c) do
     List.replace_at(registers, c, Enum.at(registers, a) + Enum.at(registers, b))
@@ -22,8 +22,8 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.addi([1,-1,-1,-1], 0, 1, 3)
-      [1,-1,-1,2]
+      iex> Opcodes.addi([1, -1, -1, -1], 0, 1, 3)
+      [1, -1, -1, 2]
   """
   def addi(registers, a, b, c) do
     List.replace_at(registers, c, Enum.at(registers, a) + b)
@@ -37,8 +37,8 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.mulr([3,3,-1,-1], 0, 1, 3)
-      [3,3,-1,9]
+      iex> Opcodes.mulr([3, 3, -1, -1], 0, 1, 3)
+      [3, 3, -1, 9]
   """
   def mulr(registers, a, b, c) do
     List.replace_at(registers, c, Enum.at(registers, a) * Enum.at(registers, b))
@@ -50,8 +50,8 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.muli([3,3,-1,-1], 0, 1, 3)
-      [3,3,-1,3]
+      iex> Opcodes.muli([3, 3, -1, -1], 0, 1, 3)
+      [3, 3, -1, 3]
   """
   def muli(registers, a, b, c) do
     List.replace_at(registers, c, Enum.at(registers, a) * b)
@@ -64,8 +64,8 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.banr([1,127,-1,-1], 0, 1, 3)
-      [1,127,-1,1]
+      iex> Opcodes.banr([1, 127, -1, -1], 0, 1, 3)
+      [1, 127, -1, 1]
   """
   def banr(registers, a, b, c) do
     List.replace_at(registers, c, band(Enum.at(registers, a), Enum.at(registers, b)))
@@ -77,11 +77,11 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> "🤷"
-      "🤷"
+      iex> Opcodes.bani([1, 0, -1, -1], 0, 1, 3)
+      [1, 0, -1, 1]
   """
   def bani(registers, a, b, c) do
-    registers
+    List.replace_at(registers, c, band(Enum.at(registers, a), b))
   end
 
   ### Bitwise OR:
@@ -92,11 +92,15 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> "🤷"
-      "🤷"
+      iex> Opcodes.borr([0, 0, 0, 0], 0, 1, 3)
+      [0, 0, 0, 0]
+      iex> Opcodes.borr([0, 1, 0, 0], 0, 1, 3)
+      [0, 1, 0, 1]
+      iex> Opcodes.borr([1, 1, 0, 0], 0, 1, 3)
+      [1, 1, 0, 1]
   """
   def borr(registers, a, b, c) do
-    registers
+    List.replace_at(registers, c, bor(Enum.at(registers, a), Enum.at(registers, b)))
   end
 
   @doc """
@@ -105,11 +109,11 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> "🤷"
-      "🤷"
+      iex> Opcodes.bori([0, 0, 0, 0], 0, 1, 3)
+      [0, 0, 0, 1]
   """
   def bori(registers, a, b, c) do
-    registers
+    List.replace_at(registers, c, bor(Enum.at(registers, a), b))
   end
 
   ### Assignment:
@@ -120,11 +124,11 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> "🤷"
-      "🤷"
+      iex> Opcodes.setr([1, -1, -1, 0], 0, -1, 3)
+      [1, -1, -1, 1]
   """
-  def setr(registers, a, b, c) do
-    registers
+  def setr(registers, a, _b, c) do
+    List.replace_at(registers, c, Enum.at(registers, a))
   end
 
   @doc """
@@ -133,11 +137,11 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> "🤷"
-      "🤷"
+      iex> Opcodes.seti([1, -1, -1, 0], 2, -1, 3)
+      [1, -1, -1, 2]
   """
-  def seti(registers, a, b, c) do
-    registers
+  def seti(registers, a, _b, c) do
+    List.replace_at(registers, c, a)
   end
 
   ### Greater-than testing:
@@ -148,11 +152,19 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> "🤷"
-      "🤷"
+      iex> Opcodes.gtir([0, 0, -1, -1], 0, 1, 3)
+      [0, 0, -1, 0]
+      iex> Opcodes.gtir([0, 0, -1, -1], 1, 0, 3)
+      [0, 0, -1, 1]
+      iex> Opcodes.gtir([0, 0, -1, -1], 0, 1, 3)
+      [0, 0, -1, 0]
   """
   def gtir(registers, a, b, c) do
-    registers
+    if a > Enum.at(registers, b) do
+      List.replace_at(registers, c, 1)
+    else
+      List.replace_at(registers, c, 0)
+    end
   end
 
   @doc """
@@ -161,11 +173,17 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> "🤷"
-      "🤷"
+      iex> Opcodes.gtri([0, 0, 0, -1], 0, 0, 3)
+      [0, 0, 0, 0]
+      iex> Opcodes.gtri([0, 0, 0, -1], 0, -1, 3)
+      [0, 0, 0, 1]
   """
   def gtri(registers, a, b, c) do
-    registers
+    if Enum.at(registers, a) > b do
+      List.replace_at(registers, c, 1)
+    else
+      List.replace_at(registers, c, 0)
+    end
   end
 
   @doc """
@@ -174,11 +192,19 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> "🤷"
-      "🤷"
+      iex> Opcodes.gtrr([5, 6, 0, -1], 0, 1, 3)
+      [5, 6, 0, 0]
+      iex> Opcodes.gtrr([5, 6, 0, -1], 1, 0, 3)
+      [5, 6, 0, 1]
+      iex> Opcodes.gtrr([5, 5, 0, -1], 0, 1, 3)
+      [5, 5, 0, 0]
   """
   def gtrr(registers, a, b, c) do
-    registers
+    if Enum.at(registers, a) > Enum.at(registers, b) do
+      List.replace_at(registers, c, 1)
+    else
+      List.replace_at(registers, c, 0)
+    end
   end
 
   ### Equality testing:
@@ -189,11 +215,17 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> "🤷"
-      "🤷"
+      iex> Opcodes.eqir([0, 0, 0, -1], 0, 0, 3)
+      [0, 0, 0, 1]
+      iex> Opcodes.eqir([0, 0, 0, -1], 1, 0, 3)
+      [0, 0, 0, 0]
   """
   def eqir(registers, a, b, c) do
-    registers
+    if a == Enum.at(registers, b) do
+      List.replace_at(registers, c, 1)
+    else
+      List.replace_at(registers, c, 0)
+    end
   end
 
   @doc """
@@ -202,11 +234,17 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> "🤷"
-      "🤷"
+      iex> Opcodes.eqri([5, 0, 0, -1], 0, 5, 3)
+      [5, 0, 0, 1]
+      iex> Opcodes.eqri([6, 0, 0, -1], 0, 5, 3)
+      [6, 0, 0, 0]
   """
   def eqri(registers, a, b, c) do
-    registers
+    if Enum.at(registers, a) == b do
+      List.replace_at(registers, c, 1)
+    else
+      List.replace_at(registers, c, 0)
+    end
   end
 
   @doc """
@@ -215,10 +253,17 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> "🤷"
-      "🤷"
+      iex> Opcodes.eqrr([5, 6, 0, -1], 0, 1, 3)
+      [5, 6, 0, 0]
+      iex> Opcodes.eqrr([5, 5, 0, -1], 0, 1, 3)
+      [5, 5, 0, 1]
+
   """
   def eqrr(registers, a, b, c) do
-    registers
+    if Enum.at(registers, a) == Enum.at(registers, b) do
+      List.replace_at(registers, c, 1)
+    else
+      List.replace_at(registers, c, 0)
+    end
   end
 end
