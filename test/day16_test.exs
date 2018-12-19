@@ -124,9 +124,8 @@
 defmodule AdventOfCode2018.Day16Test do
   use ExUnit.Case
 
-  @tag :pending
   test "solution 1" do
-    assert AdventOfCode2018.Day16.solution1() == "🤷"
+    assert AdventOfCode2018.Day16.solution1() == 618
   end
 
   @tag :pending
