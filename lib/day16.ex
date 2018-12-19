@@ -43,21 +43,19 @@ defmodule AdventOfCode2018.Day16 do
     samples()
     |> calculate_opcodes_pass1()
     |> IO.inspect(label: "pass 1")
-    |> calculate_opcodes_pass2()
-    |> calculate_opcodes_pass2()
-    |> calculate_opcodes_pass2()
-    |> calculate_opcodes_pass2()
-    |> calculate_opcodes_pass2()
-    |> calculate_opcodes_pass2()
-    |> calculate_opcodes_pass2()
-    |> calculate_opcodes_pass2()
-    |> calculate_opcodes_pass2()
-    |> calculate_opcodes_pass2()
-    |> calculate_opcodes_pass2()
-    |> calculate_opcodes_pass2()
-    |> calculate_opcodes_pass2()
+    |> wait_for_stable(&calculate_opcodes_pass2/1)
     |> Enum.map(fn {key, set} -> {key, MapSet.to_list(set) |> Enum.at(0)} end)
     |> Map.new()
+  end
+
+  defp wait_for_stable(input, fun) do
+    output = fun.(input)
+
+    if output == input do
+      output
+    else
+      wait_for_stable(output, fun)
+    end
   end
 
   defp calculate_opcodes_pass1(samples), do: calculate_opcodes_pass1(samples, %{})
