@@ -1,4 +1,4 @@
-defmodule Opcodes do
+defmodule Instructions do
   use Bitwise
 
   # Addition:
@@ -9,7 +9,7 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.addr([1, 1, -1, -1], 0, 1, 3)
+      iex> Instructions.addr([1, 1, -1, -1], 0, 1, 3)
       [1, 1, -1, 2]
   """
   def addr(registers, a, b, c) do
@@ -22,7 +22,7 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.addi([1, -1, -1, -1], 0, 1, 3)
+      iex> Instructions.addi([1, -1, -1, -1], 0, 1, 3)
       [1, -1, -1, 2]
   """
   def addi(registers, a, b, c) do
@@ -37,7 +37,7 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.mulr([3, 3, -1, -1], 0, 1, 3)
+      iex> Instructions.mulr([3, 3, -1, -1], 0, 1, 3)
       [3, 3, -1, 9]
   """
   def mulr(registers, a, b, c) do
@@ -50,7 +50,7 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.muli([3, 3, -1, -1], 0, 1, 3)
+      iex> Instructions.muli([3, 3, -1, -1], 0, 1, 3)
       [3, 3, -1, 3]
   """
   def muli(registers, a, b, c) do
@@ -64,7 +64,7 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.banr([1, 127, -1, -1], 0, 1, 3)
+      iex> Instructions.banr([1, 127, -1, -1], 0, 1, 3)
       [1, 127, -1, 1]
   """
   def banr(registers, a, b, c) do
@@ -77,7 +77,7 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.bani([1, 0, -1, -1], 0, 1, 3)
+      iex> Instructions.bani([1, 0, -1, -1], 0, 1, 3)
       [1, 0, -1, 1]
   """
   def bani(registers, a, b, c) do
@@ -92,11 +92,11 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.borr([0, 0, 0, 0], 0, 1, 3)
+      iex> Instructions.borr([0, 0, 0, 0], 0, 1, 3)
       [0, 0, 0, 0]
-      iex> Opcodes.borr([0, 1, 0, 0], 0, 1, 3)
+      iex> Instructions.borr([0, 1, 0, 0], 0, 1, 3)
       [0, 1, 0, 1]
-      iex> Opcodes.borr([1, 1, 0, 0], 0, 1, 3)
+      iex> Instructions.borr([1, 1, 0, 0], 0, 1, 3)
       [1, 1, 0, 1]
   """
   def borr(registers, a, b, c) do
@@ -109,7 +109,7 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.bori([0, 0, 0, 0], 0, 1, 3)
+      iex> Instructions.bori([0, 0, 0, 0], 0, 1, 3)
       [0, 0, 0, 1]
   """
   def bori(registers, a, b, c) do
@@ -124,7 +124,7 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.setr([1, -1, -1, 0], 0, -1, 3)
+      iex> Instructions.setr([1, -1, -1, 0], 0, -1, 3)
       [1, -1, -1, 1]
   """
   def setr(registers, a, _b, c) do
@@ -137,7 +137,7 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.seti([1, -1, -1, 0], 2, -1, 3)
+      iex> Instructions.seti([1, -1, -1, 0], 2, -1, 3)
       [1, -1, -1, 2]
   """
   def seti(registers, a, _b, c) do
@@ -152,11 +152,11 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.gtir([0, 0, -1, -1], 0, 1, 3)
+      iex> Instructions.gtir([0, 0, -1, -1], 0, 1, 3)
       [0, 0, -1, 0]
-      iex> Opcodes.gtir([0, 0, -1, -1], 1, 0, 3)
+      iex> Instructions.gtir([0, 0, -1, -1], 1, 0, 3)
       [0, 0, -1, 1]
-      iex> Opcodes.gtir([0, 0, -1, -1], 0, 1, 3)
+      iex> Instructions.gtir([0, 0, -1, -1], 0, 1, 3)
       [0, 0, -1, 0]
   """
   def gtir(registers, a, b, c) do
@@ -173,9 +173,9 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.gtri([0, 0, 0, -1], 0, 0, 3)
+      iex> Instructions.gtri([0, 0, 0, -1], 0, 0, 3)
       [0, 0, 0, 0]
-      iex> Opcodes.gtri([0, 0, 0, -1], 0, -1, 3)
+      iex> Instructions.gtri([0, 0, 0, -1], 0, -1, 3)
       [0, 0, 0, 1]
   """
   def gtri(registers, a, b, c) do
@@ -192,11 +192,11 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.gtrr([5, 6, 0, -1], 0, 1, 3)
+      iex> Instructions.gtrr([5, 6, 0, -1], 0, 1, 3)
       [5, 6, 0, 0]
-      iex> Opcodes.gtrr([5, 6, 0, -1], 1, 0, 3)
+      iex> Instructions.gtrr([5, 6, 0, -1], 1, 0, 3)
       [5, 6, 0, 1]
-      iex> Opcodes.gtrr([5, 5, 0, -1], 0, 1, 3)
+      iex> Instructions.gtrr([5, 5, 0, -1], 0, 1, 3)
       [5, 5, 0, 0]
   """
   def gtrr(registers, a, b, c) do
@@ -215,9 +215,9 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.eqir([0, 0, 0, -1], 0, 0, 3)
+      iex> Instructions.eqir([0, 0, 0, -1], 0, 0, 3)
       [0, 0, 0, 1]
-      iex> Opcodes.eqir([0, 0, 0, -1], 1, 0, 3)
+      iex> Instructions.eqir([0, 0, 0, -1], 1, 0, 3)
       [0, 0, 0, 0]
   """
   def eqir(registers, a, b, c) do
@@ -234,9 +234,9 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.eqri([5, 0, 0, -1], 0, 5, 3)
+      iex> Instructions.eqri([5, 0, 0, -1], 0, 5, 3)
       [5, 0, 0, 1]
-      iex> Opcodes.eqri([6, 0, 0, -1], 0, 5, 3)
+      iex> Instructions.eqri([6, 0, 0, -1], 0, 5, 3)
       [6, 0, 0, 0]
   """
   def eqri(registers, a, b, c) do
@@ -253,9 +253,9 @@ defmodule Opcodes do
 
   ## Examples
 
-      iex> Opcodes.eqrr([5, 6, 0, -1], 0, 1, 3)
+      iex> Instructions.eqrr([5, 6, 0, -1], 0, 1, 3)
       [5, 6, 0, 0]
-      iex> Opcodes.eqrr([5, 5, 0, -1], 0, 1, 3)
+      iex> Instructions.eqrr([5, 5, 0, -1], 0, 1, 3)
       [5, 5, 0, 1]
 
   """
