@@ -271,12 +271,20 @@ defmodule Instruction do
   def perform(instruction, registers, a, b, c) do
     operations()[instruction].(registers, a, b, c)
   end
+
+  @doc """
+  Lists the possible matching instructions for a before state, after state and a set of parameters.
+
+  ## Examples
+
+      iex> Instruction.possible_instructions([3, 2, 1, 1], [3, 2, 2, 1], 2, 1, 2)
+      [:addi, :mulr, :seti]
   """
-  def perform(:eqrr, registers, a, b, c) do
-    if Enum.at(registers, a) == Enum.at(registers, b) do
-      List.replace_at(registers, c, 1)
-    else
-      List.replace_at(registers, c, 0)
-    end
+  def possible_instructions(before_state, after_state, a, b, c) do
+    operations()
+    |> Map.keys()
+    |> Enum.filter(fn instruction ->
+      operations()[instruction].(before_state, a, b, c) == after_state
+    end)
   end
 end
