@@ -1,4 +1,6 @@
 defmodule AdventOfCode2018.Day16 do
+  require Logger
+
   def solution1 do
     samples()
     |> Enum.filter(fn {before_state, [_opcode, a, b, c], after_state} ->
@@ -35,14 +37,31 @@ defmodule AdventOfCode2018.Day16 do
   end
 
   def solution2 do
-    # run_program(program(), opcodes())
-    opcodes()
+    run_program(program(), opcodes(), [0, 0, 0, 0])
+    |> Enum.at(0)
+  end
+
+  defp program() do
+    File.read!("priv/inputs/16b.txt")
+    |> String.split("\n", trim: true)
+    |> Enum.map(fn line ->
+      String.split(line, " ") |> Enum.map(&String.to_integer/1)
+    end)
+  end
+
+  defp run_program([], _codes, state) do
+    state
+  end
+
+  defp run_program([[opcode, a, b, c] | rest], codes, state) do
+    instruction = Map.get(codes, opcode)
+    new_state = Instruction.perform(instruction, state, a, b, c)
+    run_program(rest, codes, new_state)
   end
 
   defp opcodes() do
     samples()
     |> calculate_opcodes_pass1()
-    |> IO.inspect(label: "pass 1")
     |> wait_for_stable(&calculate_opcodes_pass2/1)
     |> Enum.map(fn {key, set} -> {key, MapSet.to_list(set) |> Enum.at(0)} end)
     |> Map.new()
@@ -86,13 +105,11 @@ defmodule AdventOfCode2018.Day16 do
         MapSet.size(possible_instructions) == 1
       end)
       |> Map.new()
-      |> IO.inspect(label: "sure codes")
 
     sure_instructions =
       sure_codes
       |> Enum.flat_map(fn {_, set} -> MapSet.to_list(set) end)
       |> Enum.uniq()
-      |> IO.inspect(label: "Sure instructions")
 
     unsure_codes =
       opcodes
@@ -103,7 +120,6 @@ defmodule AdventOfCode2018.Day16 do
           Enum.member?(sure_instructions, instruction)
         end)
       end)
-      |> IO.inspect(label: "still unsure codes")
 
     filtered_codes =
       unsure_codes
@@ -116,7 +132,6 @@ defmodule AdventOfCode2018.Day16 do
         {opcode, new_set}
       end)
       |> Map.new()
-      |> IO.inspect(label: "filtered codes")
 
     Map.merge(filtered_codes, sure_codes)
   end

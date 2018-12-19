@@ -129,6 +129,6 @@ defmodule AdventOfCode2018.Day16Test do
   end
 
   test "solution 2" do
-    assert AdventOfCode2018.Day16.solution2() == "🤷"
+    assert AdventOfCode2018.Day16.solution2() == 514
   end
 end
