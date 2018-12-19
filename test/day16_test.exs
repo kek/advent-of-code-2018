@@ -128,7 +128,6 @@ defmodule AdventOfCode2018.Day16Test do
     assert AdventOfCode2018.Day16.solution1() == 618
   end
 
-  @tag :pending
   test "solution 2" do
     assert AdventOfCode2018.Day16.solution2() == "🤷"
   end
